@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minecraft
+  namespace: minecraft
+  labels:
+    app: minecraft
+spec:
+  serviceName: minecraft-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minecraft
+  template:
+    metadata:
+      labels:
+        app: minecraft
+    spec:
+      containers:
+      - name: minecraft-server
+        image: itzg/minecraft-server
+        env:
+        - name: EULA
+          value: "TRUE"
+        volumeMounts:
+        - name: minecraft-data
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: minecraft-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: local-path
